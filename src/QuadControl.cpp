@@ -76,6 +76,8 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
 //  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
 //  cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
 //  cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
+// Based on code from the classroom and modified from the python examples
+	
   float l = L / sqrtf(2.f);
   float t1 = momentCmd.x / l;
   float t2 = momentCmd.y / l;
@@ -109,7 +111,7 @@ V3F QuadControl::BodyRateControl(V3F pqrCmd, V3F pqr)
   V3F momentCmd;
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-  V3F I;
+  V3F I; //modified from python example - reduced code to use shortcut
   I.x = Ixx;
   I.y = Iyy;
   I.z = Izz;
@@ -144,13 +146,14 @@ V3F QuadControl::RollPitchControl(V3F accelCmd, Quaternion<float> attitude, floa
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
   if ( collThrustCmd > 0 ) {
-    float c = - collThrustCmd / mass;
+    // X terms
+	float c = - collThrustCmd / mass;
     float b_x_cmd = CONSTRAIN(accelCmd.x / c, -maxTiltAngle, maxTiltAngle);
     float b_x_err = b_x_cmd - R(0,2);
     float b_x_p_term = kpBank * b_x_err;
-    
+    // Y terms
     float b_y_cmd = CONSTRAIN(accelCmd.y / c, -maxTiltAngle, maxTiltAngle);
-    float b_y_err = b_y_cmd - R(1,2);
+    float b_y_err = b_y_cmd - R(1,2); // rotational matrix
     float b_y_p_term = kpBank * b_y_err;
     
     pqrCmd.x = (R(1,0) * b_x_p_term - R(0,0) * b_y_p_term) / R(2,2);
@@ -190,7 +193,7 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
   float thrust = 0;
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-  float z_err = posZCmd - posZ;
+  float z_err = posZCmd - posZ; 
   float p_term = kpPosZ * z_err;
   
   float z_dot_err = velZCmd - velZ;
@@ -235,6 +238,8 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
   accelCmd.z = 0;
   velCmd.z = 0;
   posCmd.z = pos.z;
+
+ 
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
   
